@@ -115,7 +115,7 @@
         function sendMessage(peerID, message) {
             if (conn[peerID] && conn[peerID].open) {
                 conn[peerID].send(message);
-                console.log("Sent: " + message);
+                console.log("Sent: " + message + " to " + );
             } else {
                 console.log('Connection is closed');
             }

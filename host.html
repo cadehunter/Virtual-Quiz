@@ -66,9 +66,9 @@
                 console.log("Awaiting connection.")
 
                 mainContainerSubheader.textContent = "Ready for connections."
-                connectionInstructions.innerHTML = "To join the quiz, go to cadehunter.github.io/join.html?" + peer.id;
+                connectionInstructions.innerHTML = "To join the quiz, go to cadehunter.github.io/Virtual-Quiz/join.html?" + peer.id;
                 copyLinkButton.style.display = "";
-                currentPeerLink = "cadehunter.github.io/join.html?" + peer.id;
+                currentPeerLink = "cadehunter.github.io/Virtual-Quiz/join.html?" + peer.id;
 
             });
             peer.on('connection', function(c) {

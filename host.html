@@ -177,7 +177,6 @@
         function arm() {
 
             listeningForJump = true;
-            forwardArmEvent();
             armButton.textContent = "Armed";
 
         }
@@ -191,15 +190,6 @@
                     sendMessage(keys[i], "jumped;" + conn[peerID][firstName] + ";" + conn[peerID][lastName]);
                     
                 }
-            }
-            
-        }
-        
-        function forwardArmEvent () {
-            
-            var keys = Object.keys(conn);
-            for (var i = 0; i < keys.length; i++) {
-                sendMessage(keys[i], "arm;arm");
             }
             
         }

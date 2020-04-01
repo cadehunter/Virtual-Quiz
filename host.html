@@ -186,11 +186,7 @@
             
             var keys = Object.keys(conn);
             for (var i = 0; i < keys.length; i++) {
-                if (keys[i] != peerID) {
-                    
-                    sendMessage(keys[i], "jumped;" + conn[peerID].firstName + ";" + conn[peerID].lastName);
-                    
-                }
+                sendMessage(keys[i], "jumped;" + conn[peerID].firstName + ";" + conn[peerID].lastName);
             }
             
         }

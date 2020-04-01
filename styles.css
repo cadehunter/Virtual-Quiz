@@ -90,7 +90,7 @@ body {
 
 .controlBox {
 
-    position: absolute;
+    position: fixed;
     bottom: calc(12.5% - 30px);
     left: 50%;
     transform: translate(-50%, 0);

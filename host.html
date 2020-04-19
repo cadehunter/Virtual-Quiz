@@ -147,6 +147,10 @@
                     break;
                 case "setup":
 
+                    conn[peerID].quizzer3 = {};
+                    conn[peerID].quizzer2 = {};
+                    conn[peerID].quizzer1 = {};
+                    
                     var numberOfQuizzers = splitData[1];
                     switch (numberOfQuizzers) {
                         case "3":

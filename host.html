@@ -154,14 +154,14 @@
                     var numberOfQuizzers = splitData[1];
                     switch (numberOfQuizzers) {
                         case "3":
-                            conn[peerID].quizzer3.firstName = splitData[2];
-                            conn[peerID].quizzer3.lastName = splitData[3];
+                            conn[peerID].quizzer3.firstName = splitData[6];
+                            conn[peerID].quizzer3.lastName = splitData[7];
                         case "2":
                             conn[peerID].quizzer2.firstName = splitData[4];
                             conn[peerID].quizzer2.lastName = splitData[5];
                         case "1":
-                            conn[peerID].quizzer1.firstName = splitData[6];
-                            conn[peerID].quizzer1.lastName = splitData[7];
+                            conn[peerID].quizzer1.firstName = splitData[2];
+                            conn[peerID].quizzer1.lastName = splitData[3];
                             break;
                     }
 

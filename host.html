@@ -150,7 +150,7 @@
                     conn[peerID].quizzer3 = {};
                     conn[peerID].quizzer2 = {};
                     conn[peerID].quizzer1 = {};
-                    
+
                     var numberOfQuizzers = splitData[1];
                     switch (numberOfQuizzers) {
                         case "3":
@@ -167,10 +167,12 @@
 
                     for (var i = 0; i < numberOfQuizzers; i++) {
 
-                        var element = document.createElement("li");
-                        element.textContent = conn[peerID]["quizzer" + (i + 1)].firstName + " " + conn[peerID]["quizzer" + (i + 1)].lastName;
-                        element.classList.add(peerID + "ListItem");
-                        connectedQuizzersList.appendChild(element);
+                        (function() {
+                            var element = document.createElement("li");
+                            element.textContent = conn[peerID]["quizzer" + (i + 1)].firstName + " " + conn[peerID]["quizzer" + (i + 1)].lastName;
+                            element.classList.add(peerID + "ListItem");
+                            connectedQuizzersList.appendChild(element);
+                        })()
 
                     }
 

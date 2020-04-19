@@ -34,17 +34,9 @@
         <h2 class="mainContainerSubheader connectScreenSubheader">We're connecting you to your quiz round...</h2>
 
         <div class="connectScreenInputArea">
-            <div style="width: fit-content;">
-                <input type="text" class="quizzer1FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer1LastNameInput" placeholder="Last Name">
-            </div>
-            <div style="width: fit-content;">
-                <input type="text" class="quizzer2FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer2LastNameInput" placeholder="Last Name">
-            </div>
-            <div style="width: fit-content;">
-                <input type="text" class="quizzer3FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer3LastNameInput" placeholder="Last Name">
+            <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: fit-content;">
+                <input type="text" class="firstNameInput" placeholder="First Name">
+                <input type="text" class="lastNameInput" placeholder="Last Name">
                 <button class="connectScreenJoinButton" onclick="joinButtonClicked()">Join Round</button>
             </div>
         </div>
@@ -58,22 +50,14 @@
         var jumpButton = document.querySelector(".jumpButton");
 
         var connectScreenSubheader = document.querySelector(".connectScreenSubheader");
-        var quizzer1FirstNameInput = document.querySelector(".quizzer1FirstNameInput");
-        var quizzer1LastNameInput = document.querySelector(".quizzer1LastNameInput");
-        var quizzer2FirstNameInput = document.querySelector(".quizzer2FirstNameInput");
-        var quizzer2LastNameInput = document.querySelector(".quizzer2LastNameInput");
-        var quizzer3FirstNameInput = document.querySelector(".quizzer3FirstNameInput");
-        var quizzer3LastNameInput = document.querySelector(".quizzer3LastNameInput");
+        var firstNameInput = document.querySelector(".firstNameInput");
+        var lastNameInput = document.querySelector(".lastNameInput");
 
         var mainScreen = document.querySelector(".mainScreen");
         var connectScreen = document.querySelector(".connectScreen");
 
-        var quizzer1FirstName;
-        var quizzer1LastName;
-        var quizzer2FirstName;
-        var quizzer2LastName;
-        var quizzer3FirstName;
-        var quizzer3LastName;
+        var firstName;
+        var lastName;
 
         var peer;
         var lastPeerId;
@@ -177,116 +161,22 @@
             }
         }
 
-        function jump(quizzerNumber) {
+        function jump() {
 
-            sendMessage("jump;quizzer" + quizzerNumber);
+            sendMessage("jump;jump");
 
         }
 
         function joinButtonClicked() {
 
-            var numberOfQuizzers;
-            if (quizzer3FirstNameInput.value) {
-                numberOfQuizzers = 3;
-
-                quizzer3FirstName = quizzer3FirstNameInput.value;
-                quizzer3LastName = quizzer3LastNameInput.value;
-
-                quizzer2FirstName = quizzer2FirstNameInput.value;
-                quizzer2LastName = quizzer2LastNameInput.value;
-
-            } else if (quizzer2FirstNameInput.value) {
-                numberOfQuizzers = 2;
-                
-                quizzer2FirstName = quizzer2FirstNameInput.value;
-                quizzer2LastName = quizzer2LastNameInput.value;
-
-            } else {numberOfQuizzers = 1;}
-
-            quizzer1FirstName = quizzer1FirstNameInput.value;
-            quizzer1LastName = quizzer1LastNameInput.value;
-
-            var stringMessage;
-            switch (numberOfQuizzers) {
-                    
-                case 3:
-                    stringMessage = "setup;3;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName + ";" + quizzer3FirstName + ";" + quizzer3LastName;
-                    break;
-                case 2:
-                    stringMessage = "setup;2;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName;
-                    break;
-                case 1:
-                    stringMessage = "setup;1;" + quizzer1FirstName + ";" + quizzer1LastName;
-                    break;
-                    
-                    sendMessage(stringMessage);
-                    
-            }
+            firstName = firstNameInput.value;
+            lastName = lastNameInput.value;
+            sendMessage("setup;" + firstName + ";" + lastName);
 
             connectScreen.style.display = "none";
             mainScreen.style.display = "";
 
         }
-
-        document.body.addEventListener("keydown", function(e) {
-
-            switch (e.code) {
-
-                case "ShiftLeft":
-
-                    if (quizzer3FirstName) {
-
-                        jump(1);
-
-                    } else if (quizzer2FirstName) {
-
-                        jump(1);
-
-                    } else {
-
-                        return;
-
-                    }
-
-                    break;
-                case "Space":
-
-                    if (quizzer3FirstName) {
-
-                        jump(2);
-
-                    } else if (quizzer2FirstName) {
-
-                        return;
-
-                    } else {
-
-                        jump(1);
-
-                    }
-
-                    break;
-                case "ShiftRight":
-
-                    if (quizzer3FirstName) {
-
-                        jump(3);
-
-                    } else if (quizzer2FirstName) {
-
-                        jump(2);
-
-                    } else {
-
-                        return;
-
-                    }
-
-                    break;
-
-            }
-
-        })
 
         initialize();
 

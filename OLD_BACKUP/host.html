@@ -105,10 +105,7 @@
                 conn[peerID].on('close', function() {
                     console.log("Connection to " + peerID + " reset. Awaiting connection...");
                     if (conn[peerID].firstName) {
-                        var elements = document.querySelectorAll("." + peerID + "ListItem");
-                        for (var i = 0; i < elements.length; i++) {
-                            connectedQuizzersList.removeChild(elements[i]);
-                        }
+                        connectedQuizzersList.removeChild(document.querySelector("." + peerID + "ListItem"));
                     }
                     conn[peerID] = null;
                 });
@@ -138,7 +135,7 @@
                     if (listeningForJump) {
 
                         listeningForJump = false;
-                        statusBox.textContent = conn[peerID][splitData[1]].firstName + " " + conn[peerID][splitData[2]].lastName + " jumped.";
+                        statusBox.textContent = conn[peerID].firstName + " " + conn[peerID].lastName + " jumped.";
                         armButton.textContent = "Arm";
                         //forwardJumpEvent(peerID);
 
@@ -147,28 +144,13 @@
                     break;
                 case "setup":
 
-                    var numberOfQuizzers = splitData[1];
-                    switch (numberOfQuizzers) {
-                        case 3:
-                            conn[peerID].quizzer3.firstName = splitData[2];
-                            conn[peerID].quizzer3.lastName = splitData[3];
-                        case 2:
-                            conn[peerID].quizzer2.firstName = splitData[2];
-                            conn[peerID].quizzer2.lastName = splitData[3];
-                        case 1:
-                            conn[peerID].quizzer1.firstName = splitData[2];
-                            conn[peerID].quizzer1.lastName = splitData[3];
-                            break;
-                    }
+                    conn[peerID].firstName = splitData[1];
+                    conn[peerID].lastName = splitData[2];
 
-                    for (var i = 0; i < numberofQuizzers; i++) {
-
-                        var element = document.createElement("li");
-                        element.textContent = conn[peerID]["quizzer" + (i + 1)].firstName + " " + conn[peerID]["quizzer" + (i + 1)].lastName;
-                        element.classList.add(peerID + "ListItem");
-                        connectedQuizzersList.appendChild(element);
-
-                    }
+                    var element = document.createElement("li");
+                    element.textContent = conn[peerID].firstName + " " + conn[peerID].lastName;
+                    element.classList.add(peerID + "ListItem");
+                    connectedQuizzersList.appendChild(element);
 
                     break;
 
@@ -199,14 +181,14 @@
             armButton.textContent = "Armed";
 
         }
-
-        function forwardJumpEvent(peerID) {
-
+        
+        function forwardJumpEvent (peerID) {
+            
             var keys = Object.keys(conn);
             for (var i = 0; i < keys.length; i++) {
                 sendMessage(keys[i], "jumped;" + conn[peerID].firstName + ";" + conn[peerID].lastName);
             }
-
+            
         }
 
     </script>

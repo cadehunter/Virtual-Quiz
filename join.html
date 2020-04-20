@@ -1,4 +1,13 @@
 <!DOCTYPE HTML>
+
+<!--
+--
+-- Virtual Quiz
+-- Version 1.1 Build 2
+-- Made by Cade Hunter
+--
+-->
+
 <html>
 
 <head>
@@ -10,6 +19,17 @@
 </head>
 
 <body>
+
+    <div class="overlay" onclick="hideAboutScreen()"></div>
+    <div class="aboutScreen">
+
+        <div class="closeButton" onclick="hideAboutScreen()"><img src="images/close.png"></div>
+        <h1>Virtual Quiz</h1>
+        <h2>Version 1.1 Build 2</h2>
+        <h2>Made by Cade Hunter</h2>
+        <p>Virtual Quiz uses peer.js for peer-to-peer connections.</p>
+
+    </div>
 
     <div class="mainScreen" style="display: none">
 
@@ -34,22 +54,27 @@
         <h2 class="mainContainerSubheader connectScreenSubheader">We're connecting you to your quiz round...</h2>
 
         <div class="connectScreenInputArea">
+           <p class="inputAreaNumberOfQuizzers">1 Quizzer</p> <button onclick="addQuizzerInputArea()">Add another quizzer</button>
             <div style="width: fit-content;">
-                <input type="text" class="quizzer1FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer1LastNameInput" placeholder="Last Name">
+                <input type="text" class="quizzer1FirstNameInput firstNameInput" placeholder="First Name">
+                <input type="text" class="quizzer1LastNameInput lastNameInput" placeholder="Last Name">
             </div>
-            <div style="width: fit-content;">
-                <input type="text" class="quizzer2FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer2LastNameInput" placeholder="Last Name">
+            <div style="width: fit-content;display: none;" class="quizzer2InputArea">
+                <input type="text" class="quizzer2FirstNameInput firstNameInput" placeholder="First Name">
+                <input type="text" class="quizzer2LastNameInput lastNameInput" placeholder="Last Name">
+                <button onclick="quizzer2FirstNameInput.value = '';quizzer2LastNameInput.value = '';quizzer2InputArea.style.display = 'none';inputAreaNumberOfQuizzers.textContent = '1 Quizzer';">Remove quizzer</button>
             </div>
-            <div style="width: fit-content;">
-                <input type="text" class="quizzer3FirstNameInput" placeholder="First Name">
-                <input type="text" class="quizzer3LastNameInput" placeholder="Last Name">
-                <button class="connectScreenJoinButton" onclick="joinButtonClicked()">Join Round</button>
+            <div style="width: fit-content;display: none;" class="quizzer3InputArea">
+                <input type="text" class="quizzer3FirstNameInput firstNameInput" placeholder="First Name">
+                <input type="text" class="quizzer3LastNameInput lastNameInput" placeholder="Last Name">
+                <button onclick="quizzer3FirstNameInput.value = '';quizzer3LastNameInput.value = '';quizzer3InputArea.style.display = 'none';document.querySelector('.quizzer2InputArea > button').style.display = '';inputAreaNumberOfQuizzers.textContent = '2 Quizzers';">Remove quizzer</button>
             </div>
+            <button class="connectScreenJoinButton" onclick="joinButtonClicked()" disabled>Connecting...</button>
         </div>
 
     </div>
+    
+    <a class="aboutScreenLink" onclick="showAboutScreen()">About</a>
 
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
     <script>
@@ -64,6 +89,10 @@
         var quizzer2LastNameInput = document.querySelector(".quizzer2LastNameInput");
         var quizzer3FirstNameInput = document.querySelector(".quizzer3FirstNameInput");
         var quizzer3LastNameInput = document.querySelector(".quizzer3LastNameInput");
+        
+        var inputAreaNumberOfQuizzers = document.querySelector(".inputAreaNumberOfQuizzers")
+        var quizzer2InputArea = document.querySelector(".quizzer2InputArea");
+        var quizzer3InputArea = document.querySelector(".quizzer3InputArea");
 
         var mainScreen = document.querySelector(".mainScreen");
         var connectScreen = document.querySelector(".connectScreen");
@@ -80,6 +109,50 @@
         var conn;
         //Get the ID specified in the address after the "?" sign
         var idToConnectTo = window.location.href.split("?")[1];
+
+        var overlay = document.querySelector(".overlay");
+        var aboutScreen = document.querySelector(".aboutScreen");
+
+        function showAboutScreen() {
+
+            overlay.style.zIndex = "99";
+            overlay.style.opacity = 0.2;
+
+            aboutScreen.style.top = "10%";
+
+        }
+
+        function hideAboutScreen() {
+
+            overlay.style.opacity = 0;
+            setTimeout(function() {
+                overlay.style.zIndex = "-100"
+            }, 400);
+
+            aboutScreen.style.top = "";
+
+        }
+        
+        function addQuizzerInputArea () {
+            
+            if (quizzer2InputArea.style.display == "none") {
+                
+                quizzer2InputArea.style.display = '';
+                inputAreaNumberOfQuizzers.textContent = "2 Quizzers";
+                
+            } else if (quizzer3InputArea.style.display == "none") {
+                
+                quizzer3InputArea.style.display = '';
+                document.querySelector('.quizzer2InputArea > button').style.display = "none";
+                inputAreaNumberOfQuizzers.textContent = "3 Quizzers";
+                
+            } else {
+                
+                alert("Virtual Quiz supports a maximum of three quizzers on the same device.");
+                
+            }
+            
+        }
 
         function initialize() {
             // Create own peer object with connection to shared PeerJS server
@@ -132,6 +205,8 @@
 
             conn.on('open', function() {
                 connectScreenSubheader.textContent = "Connected to quiz.";
+                connectScreenJoinButton.disabled = false;
+                connectScreenJoinButton.textContent = "Join Round";
                 console.log("Connected to: " + conn.peer);
             });
 
@@ -197,18 +272,20 @@
 
             } else if (quizzer2FirstNameInput.value) {
                 numberOfQuizzers = 2;
-                
+
                 quizzer2FirstName = quizzer2FirstNameInput.value;
                 quizzer2LastName = quizzer2LastNameInput.value;
 
-            } else {numberOfQuizzers = 1;}
+            } else {
+                numberOfQuizzers = 1;
+            }
 
             quizzer1FirstName = quizzer1FirstNameInput.value;
             quizzer1LastName = quizzer1LastNameInput.value;
 
             var stringMessage;
             switch (numberOfQuizzers) {
-                    
+
                 case 3:
                     stringMessage = "setup;3;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName + ";" + quizzer3FirstName + ";" + quizzer3LastName;
                     break;
@@ -218,7 +295,7 @@
                 case 1:
                     stringMessage = "setup;1;" + quizzer1FirstName + ";" + quizzer1LastName;
                     break;
-                    
+
             }
 
             sendMessage(stringMessage);
@@ -288,6 +365,8 @@
         })
 
         initialize();
+        
+        console.log("#It'sRegionalsNotFieldFinals");
 
     </script>
 

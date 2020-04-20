@@ -83,7 +83,8 @@ body {
     transform: translate(-50%, 0);
     background-color: #EEEEEE;
     width: calc(100% - 60px);
-    height: 300px;
+    padding: 20px;
+    box-sizing: border-box;
     border-radius: 15px;
 
 }
@@ -107,7 +108,7 @@ body {
 
     font-family: inherit;
     padding: 10px;
-    margin: 0 20px 0 0;
+    margin: 0 20px 10px 0;
     width: 225px;
     border: 2px solid #AAAAAA;
     border-radius: 2px;
@@ -189,5 +190,96 @@ body {
     color: black;
     background-color: white;
     transition: background-color 0.1s ease;
+    
+}
+
+.overlay {
+    
+    background-color: black;
+    cursor: pointer;
+    opacity: 0;
+    z-index: -100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    transition: opacity 0.4s ease;
+    
+}
+
+.aboutScreen {
+    
+    position: absolute;
+    left: 50%;
+    top: 120%;
+    transform: translate(-50%, 0);
+    z-index: 100;
+    background-color: white;
+    width: 75%;
+    max-width: 900px;
+    padding: 50px;
+    height: 90%;
+    border-radius: 35px 35px 0 0;
+    display: block;
+    transition: top 0.4s ease;
+    
+}
+.aboutScreen > h1 {
+    
+    font-size: 300%;
+    margin: 0 0 10px 0;
+    
+}
+.aboutScreen > h2 {
+    
+    font-size: 150%;
+    margin: 0 0 10px 0;
+    
+}
+
+.closeButton {
+    
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #eeeeee;
+    cursor: pointer;
+    position: absolute;
+    top: 50px;
+    right: 45px;
+    
+}
+
+.closeButton > img {
+    
+    width: 14px;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+}
+
+.aboutScreenLink {
+    
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    
+}
+.aboutScreenLink:hover {
+    
+    text-decoration: underline;
+    
+}
+
+.inputAreaNumberOfQuizzers {
+    
+    margin: 0 10px 10px 0;
+    display: inline-block;
     
 }

@@ -1,4 +1,13 @@
 <!DOCTYPE HTML>
+
+<!--
+--
+-- Virtual Quiz
+-- Version 1.1 Build 2
+-- Made by Cade Hunter
+--
+-->
+
 <html>
 
 <head>
@@ -10,6 +19,17 @@
 </head>
 
 <body>
+
+    <div class="overlay" onclick="hideAboutScreen()"></div>
+    <div class="aboutScreen">
+
+        <div class="closeButton" onclick="hideAboutScreen()"><img src="images/close.png"></div>
+        <h1>Virtual Quiz</h1>
+        <h2>Version 1.1 Build 2</h2>
+        <h2>Made by Cade Hunter</h2>
+        <p>Virtual Quiz uses peer.js for peer-to-peer connections.</p>
+
+    </div>
 
     <div class="mainContainer">
 
@@ -29,6 +49,8 @@
         <button class="armButton" onclick="arm()">Arm</button>
 
     </div>
+    
+    <a class="aboutScreenLink" onclick="showAboutScreen()">About</a>
 
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
     <script>
@@ -46,6 +68,29 @@
         var peer;
         var lastPeerId;
         var conn = {};
+
+        var overlay = document.querySelector(".overlay");
+        var aboutScreen = document.querySelector(".aboutScreen");
+
+        function showAboutScreen() {
+
+            overlay.style.zIndex = "99";
+            overlay.style.opacity = 0.2;
+
+            aboutScreen.style.top = "10%";
+
+        }
+
+        function hideAboutScreen() {
+
+            overlay.style.opacity = 0;
+            setTimeout(function() {
+                overlay.style.zIndex = "-100"
+            }, 400);
+
+            aboutScreen.style.top = "";
+
+        }
 
         function initialize() {
             // Create own peer object with connection to shared PeerJS server
@@ -214,6 +259,8 @@
             }
 
         }
+
+        console.log("#It'sRegionalsNotFieldFinals");
 
     </script>
 

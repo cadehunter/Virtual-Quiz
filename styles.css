@@ -1,14 +1,18 @@
 :root {
     color-scheme: light dark;
     --primary-color: #ffffff;
+    --primary-button-hover-color: #f5f5f5;
     --secondary-color: #eeeeee;
+    --secondary-button-hover-color: #e1e1e1;
     --text-color: #000000;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --primary-color: #2A2A2A;
+        --primary-button-hover-color: #3A3A3A;
         --secondary-color: #000000;
+        --secondary-button-hover-color: #1A1A1A;
         --text-color: #ffffff;
     }
 
@@ -125,6 +129,8 @@ body {
     max-width: 800px;
     height: 75px;
     border-radius: 15px;
+    padding: 15px;
+    box-sizing: border-box;
 
 }
 
@@ -159,11 +165,17 @@ body {
     background-color: var(--primary-color);
     border-radius: 10px;
     border: 2px solid var(--primary-color);
+    color: var(--text-color);
     box-sizing: border-box;
-    transition: all 0.1s ease;
+    transition: all 0.2s ease;
 
 }
+.connectScreenJoinButton:hover {
 
+    background-color: var(--primary-button-hover-color);
+    border-color: var(--primary-button-hover-color);
+
+}
 .connectScreenJoinButton:active {
 
     background-color: var(--secondary-color);
@@ -171,11 +183,12 @@ body {
     border: 2px solid #777777;
 
 }
-
-.connectScreenJoinButton {
-
-    color: var(--text-color);
-
+.connectScreenJoinButton:focus {
+    outline: none;
+}
+.connectScreenJoinButton:disabled {
+    background-color: var(--secondary-button-hover-color);
+    border-color: var(--secondary-color);
 }
 
 .connectionInstructions {
@@ -216,7 +229,13 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    transition: none;
+    transition: background-color 0.2s ease;
+
+}
+.armButton:hover,
+.jumpButton:hover {
+
+    background-color: var(--secondary-button-hover-color);
 
 }
 
@@ -226,6 +245,13 @@ body {
     color: var(--text-color);
     background-color: var(--primary-color);
     transition: background-color 0.1s ease;
+
+}
+
+.armButton:focus,
+.jumpButton:focus {
+
+    outline: none;
 
 }
 
@@ -258,7 +284,7 @@ body {
     height: 90%;
     border-radius: 35px 35px 0 0;
     display: block;
-    transition: top 0.4s ease;
+    transition: transform 0.4s ease;
 
 }
 
@@ -286,7 +312,11 @@ body {
     position: absolute;
     top: 50px;
     right: 45px;
+    transition: background-color 0.2s ease;
 
+}
+.closeButton:hover {
+    background-color: var(--primary-color);
 }
 
 .closeButton > img {
@@ -325,4 +355,60 @@ body {
     margin: 0 10px 10px 0;
     display: inline-block;
 
+}
+
+.jumpInstructions {
+    display: none;
+    margin: 0 0 7px 0;
+}
+
+.connectScreenInputAreaButton {
+    
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+    
+}
+.connectScreenInputAreaButton:hover {
+    background-color: var(--primary-button-hover-color);
+}
+.connectScreenInputAreaButton:active {
+    
+    background-color: var(--secondary-color);
+    outline: none;
+    
+}
+.connectScreenInputAreaButton:focus {
+    
+    outline: none;
+    
+}
+
+.alertBox {
+    
+    background-color: var(--primary-color);
+    width: 550px;
+    height: 175px;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.4s;
+    border-radius: 15px;
+    padding: 50px;
+    
+}
+.alertBoxTitle {
+    
+    font-size: 250%;
+    margin: 0 0 15px 0;
+    
+}
+.alertBoxMessage {
+    
+    font-size: 125%;
+    margin: 0;
+    
 }

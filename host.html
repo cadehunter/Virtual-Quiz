@@ -3,7 +3,7 @@
 <!--
 --
 -- Virtual Quiz
--- Version 1.1 Build 3
+-- Version 1.1 Build 4
 -- Made by Cade Hunter
 --
 -->
@@ -15,6 +15,16 @@
     <title>Host a Quiz</title>
     <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="styles.css">
+    <noscript>
+        <meta HTTP-EQUIV="REFRESH" content="0; url=noscript.html">
+    </noscript>
+    <script src="detect.min.js"></script>
+    <script>
+        var browser = detect.parse(navigator.userAgent);
+        if (browser.browser.family != "Chrome" || browser.source.indexOf("Edg") != -1) {
+            window.location.href = "wrongbrowser.html";
+        }
+    </script>
 
 </head>
 
@@ -28,9 +38,9 @@
             <img class="closeButtonImage" src="images/close.png">
         </div>
         <h1>Virtual Quiz</h1>
-        <h2>Version 1.1 Build 3</h2>
+        <h2>Version 1.1 Build 4</h2>
         <h2>Made by Cade Hunter</h2>
-        <p>Virtual Quiz uses peer.js for peer-to-peer connections.</p>
+        <p>Virtual Quiz uses peer.js for peer-to-peer connections and detect.js for browser identification.</p>
 
     </div>
 
@@ -94,6 +104,54 @@
             aboutScreen.style.top = "";
 
         }
+        
+        function alertBox(title, message) {
+            
+            var alertBoxElement = document.createElement("div");
+            alertBoxElement.classList.add("alertBox");
+            
+            var titleElement = document.createElement("h1");
+            titleElement.classList.add("alertBoxTitle");
+            titleElement.textContent = title;
+            
+            var messageElement = document.createElement("p");
+            messageElement.classList.add("alertBoxMessage");
+            messageElement.textContent = message;
+            
+            var closeButton = document.createElement("div");
+            closeButton.classList.add("closeButton");
+            closeButton.onclick = function () {hideAlertBox(alertBoxElement)};
+            closeButton.innerHTML = "<img class='closeButtonImageDark' src='images/close-dark.png'><img class='closeButtonImage' src='images/close.png'>";
+            
+            alertBoxElement.appendChild(closeButton);
+            alertBoxElement.appendChild(titleElement);
+            alertBoxElement.appendChild(messageElement);
+            document.body.appendChild(alertBoxElement);
+            
+            overlay.onclick = function () {hideAlertBox(alertBoxElement)};
+            
+            overlay.style.zIndex = "99";
+            overlay.style.opacity = 0.2;
+            
+            alertBoxElement.style.zIndex = "100";
+            alertBoxElement.style.opacity = 1;
+            
+        }
+        function hideAlertBox(element) {
+            
+            overlay.style.opacity = 0;
+            setTimeout(function() {
+                overlay.style.zIndex = "-100"
+            }, 400);
+
+            element.style.opacity = 0;
+            setTimeout(function() {
+                element.style.zIndex = "-100";
+            }, 400);
+            
+            overlay.onclick = function () {hideAboutScreen()};
+            
+        }
 
         function initialize() {
             // Create own peer object with connection to shared PeerJS server
@@ -140,6 +198,8 @@
             });
             peer.on('error', function(err) {
                 console.log(err);
+                mainContainerHeader.textContent = "Something went wrong";
+                mainContainerSubheader.textContent = "Try again in a few minutes.";
             });
         };
 
@@ -152,7 +212,7 @@
                 });
                 conn[peerID].on('close', function() {
                     console.log("Connection to " + peerID + " reset. Awaiting connection...");
-                    if (conn[peerID].firstName) {
+                    if (conn[peerID].quizzer1.firstName) {
                         var elements = document.querySelectorAll("." + peerID + "ListItem");
                         for (var i = 0; i < elements.length; i++) {
                             connectedQuizzersList.removeChild(elements[i]);
@@ -188,7 +248,7 @@
                         listeningForJump = false;
                         statusBox.textContent = conn[peerID][splitData[1]].firstName + " " + conn[peerID][splitData[1]].lastName + " jumped.";
                         armButton.textContent = "Arm (or press the spacebar)";
-                        //forwardJumpEvent(peerID);
+                        forwardJumpEvent(conn[peerID][splitData[1]].firstName + ";" + conn[peerID][splitData[1]].lastName);
 
                     }
 
@@ -251,24 +311,34 @@
             listeningForJump = true;
             statusBox.textContent = "";
             armButton.textContent = "Armed";
+            forwardArmEvent();
 
         }
 
-        function forwardJumpEvent(peerID) {
+        function forwardJumpEvent(name) {
 
             var keys = Object.keys(conn);
             for (var i = 0; i < keys.length; i++) {
-                sendMessage(keys[i], "jumped;" + conn[peerID].firstName + ";" + conn[peerID].lastName);
+                sendMessage(keys[i], "jumped;" + name);
             }
 
         }
         
+        function forwardArmEvent() {
+
+            var keys = Object.keys(conn);
+            for (var i = 0; i < keys.length; i++) {
+                sendMessage(keys[i], "arm;arm");
+            }
+
+        }
+
         document.body.addEventListener("keydown", function(e) {
 
             if (e.code == "Space") {
 
                 arm()
-                
+
             }
 
         })

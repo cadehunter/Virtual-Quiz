@@ -3,7 +3,7 @@
 <!--
 --
 -- Virtual Quiz
--- Version 1.1 Build 2
+-- Version 1.1 Build 3
 -- Made by Cade Hunter
 --
 -->
@@ -23,9 +23,12 @@
     <div class="overlay" onclick="hideAboutScreen()"></div>
     <div class="aboutScreen">
 
-        <div class="closeButton" onclick="hideAboutScreen()"><img src="images/close.png"></div>
+        <div class="closeButton" onclick="hideAboutScreen()">
+            <img class="closeButtonImageDark" src="images/close-dark.png">
+            <img class="closeButtonImage" src="images/close.png">
+        </div>
         <h1>Virtual Quiz</h1>
-        <h2>Version 1.1 Build 2</h2>
+        <h2>Version 1.1 Build 3</h2>
         <h2>Made by Cade Hunter</h2>
         <p>Virtual Quiz uses peer.js for peer-to-peer connections.</p>
 
@@ -43,7 +46,7 @@
         </div>
         <div class="controlBox">
 
-            <button class="jumpButton" onclick="jump()">Jump</button>
+            <button class="jumpButton" onclick="jump(1)">Jump (or press the spacebar)</button>
 
         </div>
 
@@ -54,7 +57,7 @@
         <h2 class="mainContainerSubheader connectScreenSubheader">We're connecting you to your quiz round...</h2>
 
         <div class="connectScreenInputArea">
-           <p class="inputAreaNumberOfQuizzers">1 Quizzer</p> <button onclick="addQuizzerInputArea()">Add another quizzer</button>
+            <p class="inputAreaNumberOfQuizzers">1 Quizzer</p> <button onclick="addQuizzerInputArea()">Add another quizzer</button>
             <div style="width: fit-content;">
                 <input type="text" class="quizzer1FirstNameInput firstNameInput" placeholder="First Name">
                 <input type="text" class="quizzer1LastNameInput lastNameInput" placeholder="Last Name">
@@ -73,7 +76,7 @@
         </div>
 
     </div>
-    
+
     <a class="aboutScreenLink" onclick="showAboutScreen()">About</a>
 
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
@@ -89,7 +92,7 @@
         var quizzer2LastNameInput = document.querySelector(".quizzer2LastNameInput");
         var quizzer3FirstNameInput = document.querySelector(".quizzer3FirstNameInput");
         var quizzer3LastNameInput = document.querySelector(".quizzer3LastNameInput");
-        
+
         var inputAreaNumberOfQuizzers = document.querySelector(".inputAreaNumberOfQuizzers")
         var quizzer2InputArea = document.querySelector(".quizzer2InputArea");
         var quizzer3InputArea = document.querySelector(".quizzer3InputArea");
@@ -103,6 +106,8 @@
         var quizzer2LastName;
         var quizzer3FirstName;
         var quizzer3LastName;
+        
+        var connectScreenJoinButton = document.querySelector(".connectScreenJoinButton");
 
         var peer;
         var lastPeerId;
@@ -132,26 +137,32 @@
             aboutScreen.style.top = "";
 
         }
-        
-        function addQuizzerInputArea () {
-            
+
+        function addQuizzerInputArea() {
+
             if (quizzer2InputArea.style.display == "none") {
-                
+
                 quizzer2InputArea.style.display = '';
                 inputAreaNumberOfQuizzers.textContent = "2 Quizzers";
-                
+
             } else if (quizzer3InputArea.style.display == "none") {
-                
+
                 quizzer3InputArea.style.display = '';
                 document.querySelector('.quizzer2InputArea > button').style.display = "none";
                 inputAreaNumberOfQuizzers.textContent = "3 Quizzers";
-                
+
             } else {
-                
+
                 alert("Virtual Quiz supports a maximum of three quizzers on the same device.");
-                
+
             }
-            
+
+        }
+
+        if (window.location.href.indexOf("?") == -1) {
+
+            window.location.href = "urlerror.html";
+
         }
 
         function initialize() {
@@ -186,9 +197,11 @@
             });
             peer.on('error', function(err) {
                 console.log(err);
-                connectScreenSubheader.textContent = "Something went wrong. Try again in a few minutes."
-                mainContainerHeader.textContent = "Something went wrong"
-                mainContainerSubheader.textContent = "Try again in a few minutes."
+                connectScreenSubheader.textContent = "Something went wrong. Try again in a few minutes.";
+                mainContainerHeader.textContent = "Something went wrong";
+                mainContainerSubheader.textContent = "Try again in a few minutes.";
+
+                connectScreenJoinButton.textContent = "Something Went Wrong"
             });
         };
 
@@ -365,7 +378,7 @@
         })
 
         initialize();
-        
+
         console.log("#It'sRegionalsNotFieldFinals");
 
     </script>

@@ -3,8 +3,8 @@
 <!--
 --
 -- Virtual Quiz
--- Version 1.1 Build 4
--- Made by Cade Hunter
+-- Version 1.1 Build 5
+-- Created by Cade Hunter
 --
 -->
 
@@ -13,16 +13,23 @@
 <head>
 
     <title>Join a Quiz</title>
-    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="https://use.typekit.net/gbu3ckh.css">
     <link rel="stylesheet" href="styles.css">
     <noscript>
         <meta HTTP-EQUIV="REFRESH" content="0; url=noscript.html">
     </noscript>
     <script src="detect.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.min.js"></script>
     <script>
         var browser = detect.parse(navigator.userAgent);
         if (browser.browser.family != "Chrome" || browser.source.indexOf("Edg") != -1) {
             window.location.href = "wrongbrowser.html";
+        }
+
+        if (window.location.href.indexOf("?") == -1) {
+
+            window.location.href = "urlerror.html";
+
         }
 
     </script>
@@ -39,9 +46,11 @@
             <img class="closeButtonImage" src="images/close.png">
         </div>
         <h1>Virtual Quiz</h1>
-        <h2>Version 1.1 Build 4</h2>
-        <h2>Made by Cade Hunter</h2>
-        <p>Virtual Quiz uses peer.js for peer-to-peer connections and detect.js for browser identification.</p>
+        <h2>Version 1.1 Build 5</h2>
+        <h2>Created by Cade Hunter</h2>
+        <p>Virtual Quiz uses peer.js for peer-to-peer connections, detect.js for browser identification, and howler.js for sound effect playback.<br>UI font is Neuzeit Grotesk from Adobe Fonts.</p>
+
+        <p class="aboutScreenBugReportText">Found a bug? <a href="https://github.com/cadehunter/Virtual-Quiz/issues/new">Click here</a> to open a new issue on GitHub.</p>
 
     </div>
 
@@ -49,441 +58,97 @@
 
         <div class="mainContainer">
 
-            <h1 class="mainContainerHeader">Connected to Quiz</h1>
+            <h1 class="mainContainerHeader">Connected to quiz</h1>
             <h2 class="mainContainerSubheader">You are now an active quizzer in this quiz.</h2>
+            <p class="connectedQuizzersTitle">Connected Quizzers:</p>
+            <ul class="connectedQuizzersList"></ul>
 
 
-            <div class="statusBox"></div>
+            <div class="statusBox">
+                <div class="statusBoxMainBox"></div>
+                <div class="statusBoxJumpBox" style="display: none;">
+                    <p class="statusBoxJumpBoxLabel">Jump</p>
+                    <h1 class="statusBoxQuizzerName">Quizzer Name</h1>
+                </div>
+            </div>
 
         </div>
         <div class="controlBox">
 
-            <button class="jumpButton" onclick="jump(1)">Jump (or press the spacebar)</button>
+            <button class="jumpButton" onmousedown="jump(1)"><span style="font-weight: bold;">Jump</span> (or press the spacebar)</button>
 
-            <p class="jumpInstructions jumpInstructions3Quizzers"></p>
-            <p class="jumpInstructions jumpInstructions2Quizzers"></p>
-            <p class="jumpInstructions jumpInstructions1Quizzer"></p>
+            <div style="width: calc(100% - 145px); height: 100%; position: absolute; top: 0; left: 0;">
+
+                <div class="jumpInstructions jumpInstructionsLeftShiftContainer">
+                    <img width="auto" height="30px" class="leftShiftKeyImage" src="images/leftShift.png">
+                    <img width="autp" height="30px" class="leftShiftKeyImageDark" src="images/leftShift-dark.png">
+                    <p><span class="jumpInstructionsLeftShift">Quizzer 1</span>: Press the left Shift key to jump</p>
+                </div>
+
+                <div class="jumpInstructions jumpInstructionsSpacebarContainer">
+                    <img width="auto" height="30px" class="spacebarKeyImage" src="images/spaceBar.png">
+                    <img width="auto" height="30px" class="spacebarKeyImageDark" src="images/spaceBar-dark.png">
+                    <p><span class="jumpInstructionsSpacebar">Quizzer 2</span>: Press the spacebar to jump</p>
+                </div>
+
+                <div class="jumpInstructions jumpInstructionsRightShiftContainer">
+                    <img width="auto" height="30px" class="rightShiftKeyImage" src="images/rightShift.png">
+                    <img width="autp" height="30px" class="rightShiftKeyImageDark" src="images/rightShift-dark.png">
+                    <p><span class="jumpInstructionsRightShift">Quizzer 3</span>: Press the right Shift key to jump</p>
+                </div>
+
+            </div>
+
+            <div class="controlBoxDivider"></div>
+
+            <div class="clockContainer">
+                <p class="clockTitle">Clock</p>
+                <h1 class="clockContent">0</h1>
+            </div>
 
         </div>
 
     </div>
     <div class="connectScreen">
 
-        <h1 class="mainContainerHeader">Joining a quiz</h1>
+        <h1 class="mainContainerHeader connectScreenHeader">Joining a quiz</h1>
         <h2 class="mainContainerSubheader connectScreenSubheader">We're connecting you to your quiz round...</h2>
+        <p class="connectScreenText"></p>
 
         <div class="connectScreenInputArea">
             <p class="inputAreaNumberOfQuizzers">1 Quizzer</p>
-            <button class="connectScreenInputAreaButton" onclick="addQuizzerInputArea()">Add another quizzer</button>
+
+            <button class="connectScreenInputAreaCircleButton" onclick="addQuizzerInputArea()">+</button>
+            <button class="connectScreenInputAreaCircleButton" onclick="removeQuizzerInputArea()">-</button>
+            <button class="connectScreenInputAreaButton" style="border-radius: 10px;height: 20px;display: none;" onclick="clearQuizzerInputAreaFields()">Clear</button>
+
             <div style="width: fit-content;">
                 <input type="text" class="quizzer1FirstNameInput firstNameInput" placeholder="First Name">
                 <input type="text" class="quizzer1LastNameInput lastNameInput" placeholder="Last Name">
             </div>
+
             <div style="width: fit-content;display: none;" class="quizzer2InputArea">
                 <input type="text" class="quizzer2FirstNameInput firstNameInput" placeholder="First Name">
                 <input type="text" class="quizzer2LastNameInput lastNameInput" placeholder="Last Name">
-                <button class="connectScreenInputAreaButton" onclick="quizzer2FirstNameInput.value = '';quizzer2LastNameInput.value = '';quizzer2InputArea.style.display = 'none';inputAreaNumberOfQuizzers.textContent = '1 Quizzer';">Remove quizzer</button>
             </div>
+
             <div style="width: fit-content;display: none;" class="quizzer3InputArea">
                 <input type="text" class="quizzer3FirstNameInput firstNameInput" placeholder="First Name">
                 <input type="text" class="quizzer3LastNameInput lastNameInput" placeholder="Last Name">
-                <button class="connectScreenInputAreaButton" onclick="quizzer3FirstNameInput.value = '';quizzer3LastNameInput.value = '';quizzer3InputArea.style.display = 'none';document.querySelector('.quizzer2InputArea > button').style.display = '';inputAreaNumberOfQuizzers.textContent = '2 Quizzers';">Remove quizzer</button>
             </div>
+
             <button class="connectScreenJoinButton" onclick="joinButtonClicked()" disabled>Connecting...</button>
         </div>
 
     </div>
 
-    <a class="aboutScreenLink" onclick="showAboutScreen()">About</a>
+    <p class="aboutScreenLink" onclick="showAboutScreen()">About</p>
+
+    <!-- <img class="bugReportButton" onclick="bugReport()" src="images/problem.png">
+    <img class="bugReportButtonDark" onclick="bugReport()" src="images/problem-dark.png"> -->
 
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
-    <script>
-        var mainContainerHeader = document.querySelector(".mainContainerHeader");
-        var mainContainerSubheader = document.querySelector(".mainContainerSubheader");
-        var jumpButton = document.querySelector(".jumpButton");
-
-        var jumpInstructions1Quizzer = document.querySelector(".jumpInstructions1Quizzer");
-        var jumpInstructions2Quizzers = document.querySelector(".jumpInstructions2Quizzers");
-        var jumpInstructions3Quizzers = document.querySelector(".jumpInstructions3Quizzers");
-
-        var statusBox = document.querySelector(".statusBox");
-
-        var connectScreenSubheader = document.querySelector(".connectScreenSubheader");
-        var quizzer1FirstNameInput = document.querySelector(".quizzer1FirstNameInput");
-        var quizzer1LastNameInput = document.querySelector(".quizzer1LastNameInput");
-        var quizzer2FirstNameInput = document.querySelector(".quizzer2FirstNameInput");
-        var quizzer2LastNameInput = document.querySelector(".quizzer2LastNameInput");
-        var quizzer3FirstNameInput = document.querySelector(".quizzer3FirstNameInput");
-        var quizzer3LastNameInput = document.querySelector(".quizzer3LastNameInput");
-
-        var inputAreaNumberOfQuizzers = document.querySelector(".inputAreaNumberOfQuizzers")
-        var quizzer2InputArea = document.querySelector(".quizzer2InputArea");
-        var quizzer3InputArea = document.querySelector(".quizzer3InputArea");
-
-        var mainScreen = document.querySelector(".mainScreen");
-        var connectScreen = document.querySelector(".connectScreen");
-
-        var quizzer1FirstName;
-        var quizzer1LastName;
-        var quizzer2FirstName;
-        var quizzer2LastName;
-        var quizzer3FirstName;
-        var quizzer3LastName;
-
-        var connectScreenJoinButton = document.querySelector(".connectScreenJoinButton");
-
-        var peer;
-        var lastPeerId;
-        var conn;
-        //Get the ID specified in the address after the "?" sign
-        var idToConnectTo = window.location.href.split("?")[1];
-
-        var overlay = document.querySelector(".overlay");
-        var aboutScreen = document.querySelector(".aboutScreen");
-
-        function showAboutScreen() {
-
-            overlay.style.zIndex = "99";
-            overlay.style.opacity = 0.2;
-
-            aboutScreen.style.transform = "translate(-50%, -100%)";
-
-        }
-
-        function hideAboutScreen() {
-
-            overlay.style.opacity = 0;
-            setTimeout(function() {
-                overlay.style.zIndex = "-100"
-            }, 400);
-
-            aboutScreen.style.transform = "translate(-50%, 0)";
-
-        }
-        
-        function alertBox(title, message) {
-            
-            var alertBoxElement = document.createElement("div");
-            alertBoxElement.classList.add("alertBox");
-            
-            var titleElement = document.createElement("h1");
-            titleElement.classList.add("alertBoxTitle");
-            titleElement.textContent = title;
-            
-            var messageElement = document.createElement("p");
-            messageElement.classList.add("alertBoxMessage");
-            messageElement.textContent = message;
-            
-            var closeButton = document.createElement("div");
-            closeButton.classList.add("closeButton");
-            closeButton.onclick = function () {hideAlertBox(alertBoxElement)};
-            closeButton.innerHTML = "<img class='closeButtonImageDark' src='images/close-dark.png'><img class='closeButtonImage' src='images/close.png'>";
-            
-            alertBoxElement.appendChild(closeButton);
-            alertBoxElement.appendChild(titleElement);
-            alertBoxElement.appendChild(messageElement);
-            document.body.appendChild(alertBoxElement);
-            
-            overlay.onclick = function () {hideAlertBox(alertBoxElement)};
-            
-            overlay.style.zIndex = "99";
-            overlay.style.opacity = 0.2;
-            
-            alertBoxElement.style.zIndex = "100";
-            alertBoxElement.style.opacity = 1;
-            
-        }
-        function hideAlertBox(element) {
-            
-            overlay.style.opacity = 0;
-            setTimeout(function() {
-                overlay.style.zIndex = "-100"
-            }, 400);
-
-            element.style.opacity = 0;
-            setTimeout(function() {
-                element.style.zIndex = "-100";
-            }, 400);
-            
-            overlay.onclick = function () {hideAboutScreen()};
-            
-        }
-
-        function addQuizzerInputArea() {
-
-            if (quizzer2InputArea.style.display == "none") {
-
-                quizzer2InputArea.style.display = '';
-                inputAreaNumberOfQuizzers.textContent = "2 Quizzers";
-
-            } else if (quizzer3InputArea.style.display == "none") {
-
-                quizzer3InputArea.style.display = '';
-                document.querySelector('.quizzer2InputArea > button').style.display = "none";
-                inputAreaNumberOfQuizzers.textContent = "3 Quizzers";
-
-            } else {
-
-                alertBox("Too many quizzers", "Virtual Quiz supports a maximum of three quizzers on the same device.");
-
-            }
-
-        }
-
-        if (window.location.href.indexOf("?") == -1) {
-
-            window.location.href = "urlerror.html";
-
-        }
-
-        function initialize() {
-            // Create own peer object with connection to shared PeerJS server
-            peer = new Peer(null, {
-                debug: 0
-            });
-
-            peer.on('open', function(id) {
-                // Workaround for peer.reconnect deleting previous id
-                if (peer.id === null) {
-                    console.log('Received null id from peer open');
-                    peer.id = lastPeerId;
-                } else {
-                    lastPeerId = peer.id;
-                }
-
-                console.log('ID: ' + peer.id);
-                join();
-            });
-            peer.on('disconnected', function() {
-                console.log('Connection lost. Please reconnect');
-
-                connectScreenSubheader.textContent = "Disconnected from quiz.";
-                mainContainerHeader.textContent = "Disconnected from quiz.";
-                mainContainerSubheader.textContent = "Try again in a few minutes.";
-
-                // Workaround for peer.reconnect deleting previous id
-                peer.id = lastPeerId;
-                peer._lastServerId = lastPeerId;
-                peer.reconnect();
-            });
-            peer.on('close', function() {
-                conn = null;
-                console.log('Connection destroyed');
-            });
-            peer.on('error', function(err) {
-                console.log(err);
-                connectScreenSubheader.textContent = "Something went wrong. Try again in a few minutes.";
-                mainContainerHeader.textContent = "Something went wrong";
-                mainContainerSubheader.textContent = "Try again in a few minutes.";
-
-                connectScreenJoinButton.textContent = "Something Went Wrong"
-            });
-        };
-
-        function join() {
-            // Close old connection
-            if (conn) {
-                conn.close();
-            }
-
-            // Create connection to destination peer specified in the input field
-            conn = peer.connect(idToConnectTo, {
-                reliable: true
-            });
-
-            conn.on('open', function() {
-                connectScreenSubheader.textContent = "Connected to quiz.";
-                connectScreenJoinButton.disabled = false;
-                connectScreenJoinButton.textContent = "Join Round";
-                console.log("Connected to: " + conn.peer);
-            });
-
-            // Handle incoming data
-            conn.on('data', function(data) {
-                console.log("Received: " + data);
-                receivedData(data);
-            });
-            conn.on('close', function() {
-                console.log("Connection closed");
-                mainContainerHeader.textContent = "Connection closed";
-                mainContainerSubheader.textContent = "The connection was closed by the quizmaster.";
-
-                connectScreenSubheader.textContent = "The connection was closed by the quizmaster.";
-                connectScreenJoinButton.textContent = "Connection closed.";
-                connectScreenJoinButton.disabled = true;
-            });
-        };
-
-        function receivedData(data) {
-
-            var splitData = data.split(";");
-            var type = splitData[0];
-
-            switch (type) {
-
-                case "jumped":
-
-                    if (splitData[1] == quizzer1FirstName) {
-                        statusBox.textContent = "You jumped.";
-                    } else {
-                        statusBox.textContent = splitData[1] + " " + splitData[2] + " jumped.";
-                    }
-
-                    break;
-                case "arm":
-
-                    statusBox.textContent = "Ready to jump."
-
-                    break;
-
-            }
-
-        }
-
-        function sendMessage(message) {
-            if (conn && conn.open) {
-                conn.send(message);
-                console.log("Sent: " + message);
-            } else {
-                console.log('Connection is closed');
-            }
-        }
-
-        function jump(quizzerNumber) {
-
-            sendMessage("jump;quizzer" + quizzerNumber);
-
-        }
-
-        function joinButtonClicked() {
-
-            if (quizzer1FirstNameInput.value && quizzer1LastNameInput.value) {
-
-                var numberOfQuizzers;
-                if (quizzer3FirstNameInput.value) {
-                    numberOfQuizzers = 3;
-
-                    quizzer3FirstName = quizzer3FirstNameInput.value;
-                    quizzer3LastName = quizzer3LastNameInput.value;
-
-                    quizzer2FirstName = quizzer2FirstNameInput.value;
-                    quizzer2LastName = quizzer2LastNameInput.value;
-
-                } else if (quizzer2FirstNameInput.value) {
-                    numberOfQuizzers = 2;
-
-                    quizzer2FirstName = quizzer2FirstNameInput.value;
-                    quizzer2LastName = quizzer2LastNameInput.value;
-
-                } else {
-                    numberOfQuizzers = 1;
-                }
-
-                quizzer1FirstName = quizzer1FirstNameInput.value;
-                quizzer1LastName = quizzer1LastNameInput.value;
-
-                var stringMessage;
-                switch (numberOfQuizzers) {
-
-                    case 3:
-                        stringMessage = "setup;3;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName + ";" + quizzer3FirstName + ";" + quizzer3LastName;
-                        jumpInstructions3Quizzers.textContent = quizzer1FirstName + ": Press the left shift key to jump."
-                        jumpInstructions2Quizzers.textContent = quizzer2FirstName + ": Press the spacebar to jump."
-                        jumpInstructions1Quizzer.textContent = quizzer3FirstName + ": Press the right shift key to jump."
-                        jumpInstructions3Quizzers.style.display = "block";
-                        jumpInstructions2Quizzers.style.display = "block";
-                        jumpInstructions1Quizzer.style.display = "block";
-                        jumpButton.style.display = "none";
-                        break;
-                    case 2:
-                        stringMessage = "setup;2;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName;
-                        jumpInstructions2Quizzers.textContent = quizzer1FirstName + ": Press the left shift key to jump."
-                        jumpInstructions1Quizzer.textContent = quizzer2FirstName + ": Press the right shift key to jump."
-                        jumpInstructions2Quizzers.style.display = "block";
-                        jumpInstructions1Quizzer.style.display = "block";
-                        jumpButton.style.display = "none";
-                        break;
-                    case 1:
-                        stringMessage = "setup;1;" + quizzer1FirstName + ";" + quizzer1LastName;
-                        //jumpInstructions1Quizzer.textContent = "Press the spacebar to jump."
-                        //jumpInstructions1Quizzer.style.display = "block";
-                        break;
-                }
-
-                sendMessage(stringMessage);
-                connectScreen.style.display = "none";
-                mainScreen.style.display = "";
-            } else {
-                alertBox("Please enter your name", "You must enter your first and last name to join the quiz.");
-            }
-
-        }
-
-        document.body.addEventListener("keydown", function(e) {
-
-            switch (e.code) {
-
-                case "ShiftLeft":
-
-                    if (quizzer3FirstName) {
-
-                        jump(1);
-
-                    } else if (quizzer2FirstName) {
-
-                        jump(1);
-
-                    } else {
-
-                        return;
-
-                    }
-
-                    break;
-                case "Space":
-
-                    if (quizzer3FirstName) {
-
-                        jump(2);
-
-                    } else if (quizzer2FirstName) {
-
-                        return;
-
-                    } else {
-
-                        jump(1);
-
-                    }
-
-                    break;
-                case "ShiftRight":
-
-                    if (quizzer3FirstName) {
-
-                        jump(3);
-
-                    } else if (quizzer2FirstName) {
-
-                        jump(2);
-
-                    } else {
-
-                        return;
-
-                    }
-
-                    break;
-
-            }
-
-        })
-
-        initialize();
-
-        console.log("#It'sRegionalsNotFieldFinals");
-
-    </script>
+    <script src="join.js"></script>
 
 </body>
 

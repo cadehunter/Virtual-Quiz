@@ -3,8 +3,8 @@
 <!--
 --
 -- Virtual Quiz
--- Version 1.1 Build 4
--- Made by Cade Hunter
+-- Version 1.1 Build 5
+-- Created by Cade Hunter
 --
 -->
 
@@ -13,17 +13,19 @@
 <head>
 
     <title>Host a Quiz</title>
-    <link rel="stylesheet" href="fonts.css">
+    <link rel="stylesheet" href="https://use.typekit.net/gbu3ckh.css">
     <link rel="stylesheet" href="styles.css">
     <noscript>
         <meta HTTP-EQUIV="REFRESH" content="0; url=noscript.html">
     </noscript>
     <script src="detect.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.min.js"></script>
     <script>
         var browser = detect.parse(navigator.userAgent);
         if (browser.browser.family != "Chrome" || browser.source.indexOf("Edg") != -1) {
             window.location.href = "wrongbrowser.html";
         }
+
     </script>
 
 </head>
@@ -38,9 +40,10 @@
             <img class="closeButtonImage" src="images/close.png">
         </div>
         <h1>Virtual Quiz</h1>
-        <h2>Version 1.1 Build 4</h2>
-        <h2>Made by Cade Hunter</h2>
-        <p>Virtual Quiz uses peer.js for peer-to-peer connections and detect.js for browser identification.</p>
+        <h2>Version 1.1 Build 5</h2>
+        <h2>Created by Cade Hunter</h2>
+        <p>Virtual Quiz uses peer.js for peer-to-peer connections, detect.js for browser identification, and howler.js for sound effect playback.<br>UI font is Neuzeit Grotesk from Adobe Fonts.</p>
+        <p class="aboutScreenBugReportText">Found a bug? <a href="https://github.com/cadehunter/Virtual-Quiz/issues/new">Click here</a> to open a new issue on GitHub.</p>
 
     </div>
 
@@ -49,303 +52,38 @@
         <h1 class="mainContainerHeader">Hosting a quiz</h1>
         <h2 class="mainContainerSubheader">Starting peer-to-peer connection...</h2>
 
-        <p class="connectionInstructions"></p><a class="copyLinkButton" style="display: none;" onclick="copyLinkToClipboard()">Copy Link</a>
+        <p class="connectionInstructions"></p><a class="copyLinkButton" style="display: none;" onclick="copyLinkToClipboard()">Copy link</a>
 
         <p class="connectedQuizzersTitle">Connected Quizzers:</p>
         <ul class="connectedQuizzersList"></ul>
 
-        <div class="statusBox"></div>
+        <div class="statusBox">
+            <div class="statusBoxMainBox"></div>
+            <div class="statusBoxJumpBox" style="display: none;">
+                <p class="statusBoxJumpBoxLabel">Jump</p>
+                <h1 class="statusBoxQuizzerName">Quizzer Name</h1>
+                <a class="cancelJumpButton" onclick="cancelJump()">Done</a>
+            </div>
+        </div>
 
     </div>
     <div class="controlBox">
 
-        <button class="armButton" onclick="arm()">Arm (or press the spacebar)</button>
+        <button class="armButton" onclick="arm()"><span style="font-weight: bold;">Arm</span> (or press the spacebar)</button>
+        <div class="clockContainer">
+            <p class="clockTitle">Clock</p>
+            <h1 class="clockContent">0</h1>
+        </div>
 
     </div>
 
-    <a class="aboutScreenLink" onclick="showAboutScreen()">About</a>
+    <p class="aboutScreenLink" onclick="showAboutScreen()">About</p>
+
+    <!-- <img class="bugReportButton" onclick="bugReport()" src="images/problem.png">
+    <img class="bugReportButtonDark" onclick="bugReport()" src="images/problem-dark.png"> -->
 
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.2.0/dist/peerjs.min.js"></script>
-    <script>
-        var mainContainerHeader = document.querySelector(".mainContainerHeader");
-        var mainContainerSubheader = document.querySelector(".mainContainerSubheader");
-        var connectionInstructions = document.querySelector(".connectionInstructions");
-        var copyLinkButton = document.querySelector(".copyLinkButton");
-        var connectedQuizzersList = document.querySelector(".connectedQuizzersList");
-        var armButton = document.querySelector(".armButton");
-        var statusBox = document.querySelector(".statusBox");
-
-        var currentPeerLink;
-        var listeningForJump = false;
-
-        var peer;
-        var lastPeerId;
-        var conn = {};
-
-        var overlay = document.querySelector(".overlay");
-        var aboutScreen = document.querySelector(".aboutScreen");
-
-        function showAboutScreen() {
-
-            overlay.style.zIndex = "99";
-            overlay.style.opacity = 0.2;
-
-            aboutScreen.style.top = "10%";
-
-        }
-
-        function hideAboutScreen() {
-
-            overlay.style.opacity = 0;
-            setTimeout(function() {
-                overlay.style.zIndex = "-100"
-            }, 400);
-
-            aboutScreen.style.top = "";
-
-        }
-        
-        function alertBox(title, message) {
-            
-            var alertBoxElement = document.createElement("div");
-            alertBoxElement.classList.add("alertBox");
-            
-            var titleElement = document.createElement("h1");
-            titleElement.classList.add("alertBoxTitle");
-            titleElement.textContent = title;
-            
-            var messageElement = document.createElement("p");
-            messageElement.classList.add("alertBoxMessage");
-            messageElement.textContent = message;
-            
-            var closeButton = document.createElement("div");
-            closeButton.classList.add("closeButton");
-            closeButton.onclick = function () {hideAlertBox(alertBoxElement)};
-            closeButton.innerHTML = "<img class='closeButtonImageDark' src='images/close-dark.png'><img class='closeButtonImage' src='images/close.png'>";
-            
-            alertBoxElement.appendChild(closeButton);
-            alertBoxElement.appendChild(titleElement);
-            alertBoxElement.appendChild(messageElement);
-            document.body.appendChild(alertBoxElement);
-            
-            overlay.onclick = function () {hideAlertBox(alertBoxElement)};
-            
-            overlay.style.zIndex = "99";
-            overlay.style.opacity = 0.2;
-            
-            alertBoxElement.style.zIndex = "100";
-            alertBoxElement.style.opacity = 1;
-            
-        }
-        function hideAlertBox(element) {
-            
-            overlay.style.opacity = 0;
-            setTimeout(function() {
-                overlay.style.zIndex = "-100"
-            }, 400);
-
-            element.style.opacity = 0;
-            setTimeout(function() {
-                element.style.zIndex = "-100";
-            }, 400);
-            
-            overlay.onclick = function () {hideAboutScreen()};
-            
-        }
-
-        function initialize() {
-            // Create own peer object with connection to shared PeerJS server
-            peer = new Peer(null, {
-                debug: 0
-            });
-
-            peer.on('open', function(id) {
-                // Workaround for peer.reconnect deleting previous id
-                if (peer.id === null) {
-                    console.log('Received null id from peer open');
-                    peer.id = lastPeerId;
-                } else {
-                    lastPeerId = peer.id;
-                }
-
-                console.log("ID: " + peer.id);
-                console.log("Awaiting connection.")
-
-                mainContainerSubheader.textContent = "Ready for connections."
-                connectionInstructions.innerHTML = "To join the quiz, go to cadehunter.github.io/Virtual-Quiz/join.html?" + peer.id;
-                copyLinkButton.style.display = "";
-                currentPeerLink = "cadehunter.github.io/Virtual-Quiz/join.html?" + peer.id;
-
-            });
-            peer.on('connection', function(c) {
-
-                conn[c.peer] = c;
-                console.log("Connected to: " + c.peer);
-                ready(c.peer);
-
-            });
-            peer.on('disconnected', function() {
-                console.log('Connection lost. Please reconnect');
-
-                // Workaround for peer.reconnect deleting previous id
-                peer.id = lastPeerId;
-                peer._lastServerId = lastPeerId;
-                peer.reconnect();
-            });
-            peer.on('close', function() {
-                conn = null;
-                console.log('Connection destroyed');
-            });
-            peer.on('error', function(err) {
-                console.log(err);
-                mainContainerHeader.textContent = "Something went wrong";
-                mainContainerSubheader.textContent = "Try again in a few minutes.";
-            });
-        };
-
-        function ready(peerID) {
-            (function() {
-                conn[peerID].on('data', function(data) {
-                    console.log("Data recieved");
-                    console.log("Received " + data + " from " + peerID);
-                    receivedData(data, peerID);
-                });
-                conn[peerID].on('close', function() {
-                    console.log("Connection to " + peerID + " reset. Awaiting connection...");
-                    if (conn[peerID].quizzer1.firstName) {
-                        var elements = document.querySelectorAll("." + peerID + "ListItem");
-                        for (var i = 0; i < elements.length; i++) {
-                            connectedQuizzersList.removeChild(elements[i]);
-                        }
-                    }
-                    conn[peerID] = null;
-                });
-            })()
-        }
-
-        function sendMessage(peerID, message) {
-            if (conn[peerID] && conn[peerID].open) {
-                conn[peerID].send(message);
-                console.log("Sent: " + message + " to " + peerID);
-            } else {
-                console.log('Connection is closed');
-            }
-        }
-
-        initialize();
-
-        function receivedData(data, peerID) {
-
-            var splitData = data.split(";");
-            var type = splitData[0];
-
-            switch (type) {
-
-                case "jump":
-
-                    if (listeningForJump) {
-
-                        listeningForJump = false;
-                        statusBox.textContent = conn[peerID][splitData[1]].firstName + " " + conn[peerID][splitData[1]].lastName + " jumped.";
-                        armButton.textContent = "Arm (or press the spacebar)";
-                        forwardJumpEvent(conn[peerID][splitData[1]].firstName + ";" + conn[peerID][splitData[1]].lastName);
-
-                    }
-
-                    break;
-                case "setup":
-
-                    conn[peerID].quizzer3 = {};
-                    conn[peerID].quizzer2 = {};
-                    conn[peerID].quizzer1 = {};
-
-                    var numberOfQuizzers = splitData[1];
-                    switch (numberOfQuizzers) {
-                        case "3":
-                            conn[peerID].quizzer3.firstName = splitData[6];
-                            conn[peerID].quizzer3.lastName = splitData[7];
-                        case "2":
-                            conn[peerID].quizzer2.firstName = splitData[4];
-                            conn[peerID].quizzer2.lastName = splitData[5];
-                        case "1":
-                            conn[peerID].quizzer1.firstName = splitData[2];
-                            conn[peerID].quizzer1.lastName = splitData[3];
-                            break;
-                    }
-
-                    for (var i = 0; i < numberOfQuizzers; i++) {
-
-                        (function() {
-                            var element = document.createElement("li");
-                            element.textContent = conn[peerID]["quizzer" + (i + 1)].firstName + " " + conn[peerID]["quizzer" + (i + 1)].lastName;
-                            element.classList.add(peerID + "ListItem");
-                            connectedQuizzersList.appendChild(element);
-                        })()
-
-                    }
-
-                    break;
-
-            }
-
-        }
-
-        function copyLinkToClipboard() {
-            var element = document.createElement('textarea');
-            element.value = currentPeerLink;
-            element.setAttribute('readonly', '');
-            element.style.position = 'absolute';
-            element.style.left = '-9999px';
-            document.body.appendChild(element);
-            element.select();
-            document.execCommand('copy');
-            document.body.removeChild(element);
-            copyLinkButton.textContent = "Link Copied";
-            setTimeout(function() {
-                copyLinkButton.textContent = "Copy Link"
-            }, 5000);
-        }
-
-        function arm() {
-
-            listeningForJump = true;
-            statusBox.textContent = "";
-            armButton.textContent = "Armed";
-            forwardArmEvent();
-
-        }
-
-        function forwardJumpEvent(name) {
-
-            var keys = Object.keys(conn);
-            for (var i = 0; i < keys.length; i++) {
-                sendMessage(keys[i], "jumped;" + name);
-            }
-
-        }
-        
-        function forwardArmEvent() {
-
-            var keys = Object.keys(conn);
-            for (var i = 0; i < keys.length; i++) {
-                sendMessage(keys[i], "arm;arm");
-            }
-
-        }
-
-        document.body.addEventListener("keydown", function(e) {
-
-            if (e.code == "Space") {
-
-                arm()
-
-            }
-
-        })
-
-        console.log("#It'sRegionalsNotFieldFinals");
-
-    </script>
+    <script src="host.js"></script>
 
 </body>
 

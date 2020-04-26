@@ -24,7 +24,8 @@ body {
 body {
 
     margin: 0;
-    font-family: "SFDisplay-Semibold", Helvetica, Arial, sans-serif;
+    font-family: neuzeit-grotesk, Helvetica, Arial, sans-serif;
+    font-weight: 700;
     background-color: var(--secondary-color);
     color: var(--text-color);
 

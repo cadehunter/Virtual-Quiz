@@ -56,6 +56,8 @@ var clockContent = document.querySelector(".clockContent");
 var peer;
 var lastPeerId;
 var conn;
+var isReconnecting = false;
+var setupMessage;
 
 //Get the ID specified in the address after the "?" sign
 var idToConnectTo = window.location.href.split("?")[1];
@@ -277,15 +279,17 @@ function initialize() {
         }
 
         console.log('ID: ' + peer.id);
+        connectScreenSubheader.textContent = "We're connecting you to your quiz round...";
         join();
     });
     peer.on('disconnected', function () {
         console.log('Connection lost. Please reconnect');
 
-        connectScreenSubheader.textContent = "Disconnected from quiz.";
-        mainContainerHeader.textContent = "Disconnected from quiz.";
-        mainContainerSubheader.textContent = "Try again in a few minutes.";
+        connectScreenSubheader.textContent = "Disconnected from quiz. Reconnecting...";
+        mainContainerHeader.textContent = "Disconnected from quiz";
+        mainContainerSubheader.textContent = "Reconnecting...";
 
+        isReconnecting = true;
         // Workaround for peer.reconnect deleting previous id
         peer.id = lastPeerId;
         peer._lastServerId = lastPeerId;
@@ -323,6 +327,15 @@ function join() {
         connectScreenSubheader.textContent = "Connected to quiz.";
         connectScreenJoinButton.disabled = false;
         connectScreenJoinButton.textContent = "Join Round";
+
+        mainContainerHeader.textContent = "Connected to quiz";
+        mainContainerSubheader.textContent = "You are now an active quizzer in this round";
+
+        if (isReconnecting) {
+            sendMessage(setupMessage);
+            isReconnecting = false;
+        }
+
         console.log("Connected to: " + conn.peer);
     });
 
@@ -333,17 +346,22 @@ function join() {
     });
     conn.on('close', function () {
         console.log("Connection closed");
-        mainContainerHeader.textContent = "Connection closed";
-        mainContainerSubheader.textContent = "The connection was closed by the quizmaster.";
 
-        connectScreenHeader.textContent = "Connection closed";
-        connectScreenSubheader.textContent = "The connection was closed by the quizmaster.";
-        connectScreenJoinButton.textContent = "Connection closed.";
-        connectScreenJoinButton.disabled = true;
+        if (!isReconnecting) {
 
-        connectedQuizzersTitle.style.display = "none";
-        while (connectedQuizzersList.firstChild) {
-            connectedQuizzersList.removeChild(connectedQuizzersList.lastChild);
+            mainContainerHeader.textContent = "Connection closed";
+            mainContainerSubheader.textContent = "The connection was closed by the quizmaster.";
+
+            connectScreenHeader.textContent = "Connection closed";
+            connectScreenSubheader.textContent = "The connection was closed by the quizmaster.";
+            connectScreenJoinButton.textContent = "Connection closed.";
+            connectScreenJoinButton.disabled = true;
+
+            connectedQuizzersTitle.style.display = "none";
+            while (connectedQuizzersList.firstChild) {
+                connectedQuizzersList.removeChild(connectedQuizzersList.lastChild);
+            }
+
         }
     });
 };
@@ -411,6 +429,24 @@ function receivedData(data) {
 
             break;
 
+        case "heartbeat":
+
+            if (isReconnecting) {
+
+                connectScreenSubheader.textContent = "Connected to quiz.";
+                connectScreenJoinButton.disabled = false;
+                connectScreenJoinButton.textContent = "Join Round";
+
+                mainContainerHeader.textContent = "Connected to quiz";
+                mainContainerSubheader.textContent = "You are now an active quizzer in this round";
+
+                sendMessage(setupMessage);
+                isReconnecting = false;
+
+            }
+
+            break;
+
     }
 
 }
@@ -467,12 +503,11 @@ function joinButtonClicked() {
     quizzer1FirstName = quizzer1FirstNameInput.value;
     quizzer1LastName = quizzer1LastNameInput.value;
 
-    var stringMessage;
     switch (numberOfQuizzers) {
 
         case 3:
 
-            stringMessage = "setup;3;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName + ";" + quizzer3FirstName + ";" + quizzer3LastName;
+            setupMessage = "setup;3;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName + ";" + quizzer3FirstName + ";" + quizzer3LastName;
 
             jumpInstructionsLeftShift.textContent = quizzer1FirstName;
             jumpInstructionsSpacebar.textContent = quizzer2FirstName;
@@ -489,7 +524,7 @@ function joinButtonClicked() {
             break;
         case 2:
 
-            stringMessage = "setup;2;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName;
+            setupMessage = "setup;2;" + quizzer1FirstName + ";" + quizzer1LastName + ";" + quizzer2FirstName + ";" + quizzer2LastName;
 
             jumpInstructionsLeftShift.textContent = quizzer1FirstName;
             jumpInstructionsRightShift.textContent = quizzer2FirstName;
@@ -504,14 +539,14 @@ function joinButtonClicked() {
             break;
         case 1:
 
-            stringMessage = "setup;1;" + quizzer1FirstName + ";" + quizzer1LastName;
+            setupMessage = "setup;1;" + quizzer1FirstName + ";" + quizzer1LastName;
 
             storeQuizzerNames(1);
 
             break;
     }
 
-    sendMessage(stringMessage);
+    sendMessage(setupMessage);
     connectScreen.style.display = "none";
     mainScreen.style.display = "";
 

@@ -10,6 +10,10 @@
         --secondary-color: #000000;
         --text-color: #ffffff;
     }
+    
+    a {
+        color: cornflowerblue !important;
+    }
 }
 
 html,
@@ -57,4 +61,14 @@ body {
 
 .mainContainerSubheader {
     font-size: 175%;
+}
+
+a {
+    color: dodgerblue;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }

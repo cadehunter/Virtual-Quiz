@@ -31,10 +31,6 @@ var remainingTimeOnClock = 0;
 var clockContent = document.querySelector(".clockContent");
 
 
-//var jumpSoundAudioElement = new Audio("beepSound.mp4");
-//jumpSoundAudioElement.preload = "auto";
-//jumpSoundAudioElement.volume = 0.5;
-
 var jumpSoundAudioElement = new Howl({
     src: ['sounds/jump.mp3'],
     volume: 0.5,
@@ -178,7 +174,7 @@ function initialize() {
 };
 
 function ready(peerID) {
-    (function () {
+    (function (peerID) {
         conn[peerID].on('data', function (data) {
             console.log("Received " + data + " from " + peerID);
             receivedData(data, peerID);
@@ -191,18 +187,20 @@ function ready(peerID) {
                     connectedQuizzersList.removeChild(elements[i]);
                 }
             }
+            clearInterval(conn[peerID].heartBeatInterval);
             conn[peerID] = null;
             forwardQuizzerList();
         });
-    })()
+        conn[peerID].heartbeatInterval = setInterval(sendMessage.bind(null, peerID, "heartbeat;heartbeat"), 7000);
+    })(peerID)
 }
 
 function sendMessage(peerID, message) {
     if (conn[peerID] && conn[peerID].open) {
         conn[peerID].send(message);
         console.log("Sent: " + message + " to " + peerID);
-    } else {
-        console.log('Connection is closed');
+    } else if (!conn[peerID]) {
+        console.log('Connection does not exist');
     }
 }
 

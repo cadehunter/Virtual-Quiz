@@ -191,7 +191,7 @@ function ready(peerID) {
             conn[peerID] = null;
             forwardQuizzerList();
         });
-        conn[peerID].heartbeatInterval = setInterval(sendMessage.bind(null, peerID, "heartbeat;heartbeat"), 7000);
+        conn[peerID].heartbeatInterval = setInterval(sendMessage.bind(null, peerID, "heartbeat;heartbeat"), 10000);
     })(peerID)
 }
 

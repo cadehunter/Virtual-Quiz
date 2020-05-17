@@ -3,7 +3,7 @@
 <!--
 --
 -- Virtual Quiz
--- Version 1.1 Build 6
+-- Version 1.1 Build 7
 -- Created by Cade Hunter
 --
 -->
@@ -37,6 +37,15 @@
 </head>
 
 <body>
+    
+    <div class="blurNoticeScreen" style="display: none;">
+        
+        <div>
+            <h1>Uh oh, you clicked another window.</h1>
+            <p>Click this window to make sure you can jump.</p>
+        </div>
+        
+    </div>
 
     <div class="overlay" onclick="hideAboutScreen()"></div>
     <div class="aboutScreen">
@@ -46,7 +55,7 @@
             <img class="closeButtonImage" src="images/close.png">
         </div>
         <h1>Virtual Quiz</h1>
-        <h2>Version 1.1 Build 6</h2>
+        <h2>Version 1.1 Build 7</h2>
         <h2>Created by Cade Hunter</h2>
         <p>Virtual Quiz uses peer.js for peer-to-peer connections, detect.js for browser identification, and howler.js for sound effect playback.<br>UI font is Neuzeit Grotesk from Adobe Fonts.</p>
 

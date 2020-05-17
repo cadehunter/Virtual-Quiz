@@ -45,6 +45,8 @@ var quizzer3InputArea = document.querySelector(".quizzer3InputArea");
 var overlay = document.querySelector(".overlay");
 var aboutScreen = document.querySelector(".aboutScreen");
 
+var blurNoticeScreen = document.querySelector(".blurNoticeScreen");
+
 
 var clockObject = null;
 var remainingTimeOnClock = 0;
@@ -57,7 +59,7 @@ var peer;
 var lastPeerId;
 var conn;
 var isReconnecting = false;
-var setupMessage;
+var setupMessage = "setup;" + localStorage.getItem("quizzerNames");
 
 //Get the ID specified in the address after the "?" sign
 var idToConnectTo = window.location.href.split("?")[1];
@@ -263,7 +265,8 @@ function clearQuizzerInputAreaFields() {
 }
 
 
-function initialize() {
+function initialize(isReconnectingFromReload) {
+    
     // Create own peer object with connection to shared PeerJS server
     peer = new Peer(null, {
         debug: 0
@@ -280,7 +283,14 @@ function initialize() {
 
         console.log('ID: ' + peer.id);
         connectScreenSubheader.textContent = "We're connecting you to your quiz round...";
-        join();
+        
+        if (isReconnectingFromReload) {
+            mainContainerSubheader.textContent = "Reconnecting to round...";
+            join(true);
+        } else {
+            join();
+        }
+        
     });
     peer.on('disconnected', function () {
         console.log('Connection lost. Please reconnect');
@@ -310,9 +320,11 @@ function initialize() {
 
         connectScreenJoinButton.textContent = "Something Went Wrong"
     });
-};
+    
+}
 
-function join() {
+function join(isReconnectingFromReload) {
+    
     // Close old connection
     if (conn) {
         conn.close();
@@ -330,6 +342,11 @@ function join() {
 
         mainContainerHeader.textContent = "Connected to quiz";
         mainContainerSubheader.textContent = "You are now an active quizzer in this round";
+        
+        if (isReconnectingFromReload) {
+            sendMessage(setupMessage);
+            mainContainerHeader.textContent = "Reconnected to quiz";
+        }
 
         if (isReconnecting) {
             sendMessage(setupMessage);
@@ -361,10 +378,13 @@ function join() {
             while (connectedQuizzersList.firstChild) {
                 connectedQuizzersList.removeChild(connectedQuizzersList.lastChild);
             }
+            
+            window.location = window.location.href += "?reconnecting";
 
         }
     });
-};
+    
+}
 
 function sendMessage(message) {
     if (conn && conn.open) {
@@ -653,6 +673,29 @@ document.body.addEventListener("keydown", function (e) {
 
 });
 
-initialize();
+window.onfocus = function () {
+    blurNoticeScreen.style.display = "none";
+};
+window.onblur = function () {
+    blurNoticeScreen.style.display = "";
+};
+
+var splitURL = window.location.href.split("?");
+if (splitURL.length > 2 && splitURL[2] == "reconnecting") {
+
+    //initialize with reconnect parameter
+    initialize(true);
+    
+    mainContainerHeader.textContent = "Reconnecting";
+    mainContainerSubheader.textContent = "Obtaining Peer ID...";
+    
+    connectScreen.style.display = "none";
+    mainScreen.style.display = "";
+
+} else {
+
+    initialize();
+
+}
 
 console.log("#It'sRegionalsNotFieldFinals");
